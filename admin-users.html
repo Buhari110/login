@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Users – Admin Panel</title>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f9fd;
+    }
+
+    header {
+      background: #1d3557;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+
+    .container {
+      padding: 2rem;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      max-width: 400px;
+      padding: 0.7rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      background: #1d3557;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .back-btn {
+      margin-top: 2rem;
+      background: #1d3557;
+      color: white;
+      padding: 0.7rem 1.5rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .delete-btn {
+      background: #e74c3c;
+      color: white;
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background: #c0392b;
+    }
+
+    @media screen and (max-width: 768px) {
+      th, td {
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Admin – Manage Users</h1>
+    <button onclick="window.location.href='admin-dashboard.html'" class="back-btn">← Back</button>
+  </header>
+
+  <div class="container">
+    <input type="text" id="search" placeholder="Search by name, email, division..." onkeyup="filterTable()"/>
+
+    <table id="usersTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Division</th>
+          <th>Role</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="usersBody">
+        <!-- Populated by JavaScript -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const email = localStorage.getItem("userEmail");
+    const role = localStorage.getItem("userRole");
+
+    if (!email || role !== "admin") {
+      window.location.href = "index.html";
+    }
+
+    fetch("YOUR_GOOGLE_SCRIPT_WEBAPP_URL", {
+      method: "POST",
+      body: JSON.stringify({ action: "getAllUsers" })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "success") {
+        const users = data.users;
+        const tbody = document.getElementById("usersBody");
+        tbody.innerHTML = "";
+
+        users.forEach(user => {
+          const row = `
+            <tr>
+              <td>${user.id}</td>
+              <td>${user.name}</td>
+              <td>${user.email}</td>
+              <td>${user.phone}</td>
+              <td>${user.division}</td>
+              <td>${user.role}</td>
+              <td><button class="delete-btn" onclick="deleteUser('${user.email}', this)">Delete</button></td>
+            </tr>`;
+          tbody.insertAdjacentHTML("beforeend", row);
+        });
+      }
+    });
+
+    function deleteUser(email, btn) {
+      if (!confirm("Are you sure you want to delete this user?")) return;
+
+      fetch("https://script.google.com/macros/s/AKfycbwCUC5TBSRqGBuF6YhIEs6w8mFlc8EKPEyTusNlGHyxMdbQJ4j_ssQzU2eshgHnpw5KOA/exec", {
+        method: "POST",
+        body: JSON.stringify({ action: "deleteUser", email })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success") {
+          btn.closest("tr").remove();
+          alert("User deleted successfully.");
+        } else {
+          alert("Failed to delete user.");
+        }
+      });
+    }
+
+    function filterTable() {
+      const input = document.getElementById("search").value.toLowerCase();
+      const rows = document.querySelectorAll("#usersBody tr");
+
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(input) ? "" : "none";
+      });
+    }
+  </script>
+
+</body>
+</html>

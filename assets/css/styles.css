@@ -1,0 +1,272 @@
+/* === Reset & Base Styles === */
+* {
+  margin: 0; padding: 0; box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: #f4f9fd;
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  line-height: 1.5;
+}
+
+/* === Containers === */
+.container {
+  background: white;
+  max-width: 700px;
+  width: 100%;
+  padding: 2rem 3rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  margin-bottom: 3rem;
+}
+
+/* === Typography === */
+h1, h2, h3 {
+  color: #1d3557;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  letter-spacing: 0.02em;
+}
+
+p, label {
+  font-size: 1rem;
+  color: #444;
+}
+
+label {
+  font-weight: 600;
+}
+
+/* === Inputs & Selects === */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="file"],
+select,
+textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-top: 0.3rem;
+  margin-bottom: 1.25rem;
+  border-radius: 12px;
+  border: 1.5px solid #ddd;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus {
+  border-color: #1d3557;
+  outline: none;
+  box-shadow: 0 0 6px #1d3557aa;
+  background: #fefefe;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* === Buttons === */
+button {
+  background: #1d3557;
+  color: white;
+  padding: 0.9rem 2.2rem;
+  border: none;
+  border-radius: 14px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  font-weight: 700;
+  box-shadow: 0 5px 18px rgba(29, 53, 87, 0.3);
+  user-select: none;
+}
+
+button:hover, button:focus {
+  background: #0e2a45;
+  box-shadow: 0 8px 25px rgba(14, 42, 69, 0.6);
+  outline: none;
+}
+
+button:disabled {
+  background: #999;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* === Tables === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.07);
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
+th, td {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+th {
+  background: #1d3557;
+  color: white;
+  font-weight: 700;
+  user-select: none;
+}
+
+tr:hover {
+  background: #f1f1f1;
+  cursor: default;
+}
+
+/* === Images === */
+.rounded-img {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-img {
+  width: 130px;
+  height: 130px;
+  border: 4px solid #1d3557;
+  margin-bottom: 1rem;
+  user-select: none;
+}
+
+/* === Layout Helpers === */
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mt-1 { margin-top: 1rem; }
+.mt-2 { margin-top: 2rem; }
+.mb-1 { margin-bottom: 1rem; }
+.mb-2 { margin-bottom: 2rem; }
+
+/* === Alerts / Notifications === */
+.alert {
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-top: 1rem;
+  font-weight: 600;
+  user-select: none;
+  max-width: 700px;
+}
+
+.alert-success {
+  background: #daf5d7;
+  color: #2a7b1e;
+}
+
+.alert-error {
+  background: #fbdcdc;
+  color: #a12420;
+}
+
+/* === Links === */
+a {
+  color: #1d3557;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+  user-select: none;
+}
+
+a:hover, a:focus {
+  text-decoration: underline;
+  color: #0e2a45;
+}
+
+/* === Header === */
+header {
+  background: #1d3557;
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+  user-select: none;
+}
+
+header h1 {
+  font-size: 1.4rem;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .container {
+    padding: 1.5rem 2rem;
+  }
+
+  th, td {
+    font-size: 0.85rem;
+    padding: 0.7rem 1rem;
+  }
+
+  header {
+    flex-direction: column;
+    padding: 1rem;
+    border-radius: 0 0 10px 10px;
+  }
+}
+
+/* === File input styling === */
+input[type="file"] {
+  padding: 0.3rem;
+}
+
+/* === Scrollbar styling for tables (optional) === */
+table {
+  display: block;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+table::-webkit-scrollbar {
+  width: 8px;
+}
+
+table::-webkit-scrollbar-thumb {
+  background-color: #1d3557cc;
+  border-radius: 12px;
+}
+
+/* === Form groups === */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+/* === Loading spinner (optional) === */
+.spinner {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #1d3557;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 2rem auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

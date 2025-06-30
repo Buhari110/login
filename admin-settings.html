@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Settings – FAG HQ</title>
+  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f9fd;
+    }
+
+    header {
+      background: #1d3557;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 1.2rem;
+      margin: 0;
+    }
+
+    .container {
+      padding: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+    }
+
+    th, td {
+      padding: 1rem;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+
+    th {
+      background: #1d3557;
+      color: white;
+    }
+
+    select {
+      padding: 0.4rem;
+      border-radius: 5px;
+    }
+
+    .save-btn {
+      background: #1d3557;
+      color: white;
+      padding: 0.4rem 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .save-btn:hover {
+      background: #0e2a45;
+    }
+
+    .back-btn {
+      margin-top: 2rem;
+      background: #888;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    @media screen and (max-width: 600px) {
+      th, td {
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Admin Role Management</h1>
+    <button onclick="window.location.href='admin-dashboard.html'" class="back-btn">← Back</button>
+  </header>
+
+  <div class="container">
+    <table id="roleTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Current Role</th>
+          <th>Change Role</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="roleBody">
+        <!-- Populated dynamically -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const email = localStorage.getItem("userEmail");
+    const role = localStorage.getItem("userRole");
+
+    if (!email || role !== "admin") {
+      window.location.href = "index.html";
+    }
+
+    fetch("https://script.google.com/macros/s/AKfycbwCUC5TBSRqGBuF6YhIEs6w8mFlc8EKPEyTusNlGHyxMdbQJ4j_ssQzU2eshgHnpw5KOA/exec", {
+      method: "POST",
+      body: JSON.stringify({ action: "getAllUsers" })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "success") {
+        const body = document.getElementById("roleBody");
+        body.innerHTML = "";
+        data.users.forEach(user => {
+          body.innerHTML += `
+            <tr>
+              <td>${user.name}</td>
+              <td>${user.email}</td>
+              <td>${user.role}</td>
+              <td>
+                <select id="role-${user.email}">
+                  <option value="user" ${user.role === "user" ? "selected" : ""}>User</option>
+                  <option value="admin" ${user.role === "admin" ? "selected" : ""}>Admin</option>
+                </select>
+              </td>
+              <td><button class="save-btn" onclick="updateRole('${user.email}')">Save</button></td>
+            </tr>
+          `;
+        });
+      }
+    });
+
+    function updateRole(email) {
+      const newRole = document.getElementById(`role-${email}`).value;
+
+      fetch("YOUR_GOOGLE_SCRIPT_WEBAPP_URL", {
+        method: "POST",
+        body: JSON.stringify({ action: "updateUserRole", email: email, role: newRole })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success") {
+          alert("Role updated successfully!");
+          location.reload();
+        } else {
+          alert("Error updating role.");
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

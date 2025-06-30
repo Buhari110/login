@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>User Profile – FAG HQ</title>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 2rem;
+      background: #f4f9fd;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #1d3557;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.7rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+
+    #preview img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-top: 10px;
+      border: 3px solid #1d3557;
+    }
+
+    .submit-btn {
+      background: #1d3557;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      width: 100%;
+      margin-top: 1.5rem;
+      cursor: pointer;
+    }
+
+    .submit-btn:hover {
+      background: #0e2a45;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 1rem;
+      color: #1d3557;
+      text-decoration: none;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Edit Profile</h2>
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" id="nameInput">
+    </div>
+    <div class="form-group">
+      <label>Phone</label>
+      <input type="text" id="phoneInput">
+    </div>
+    <div class="form-group">
+      <label>Address</label>
+      <input type="text" id="addressInput">
+    </div>
+    <div class="form-group">
+      <label>Division</label>
+      <select id="divisionInput">
+        <option value="ILRDIV">Ilorin Division</option>
+        <option value="KAIDIV">Kaiama Division</option>
+        <option value="AJSDIV">Ajase Division</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Update Image</label>
+      <input type="file" accept="image/*" id="imageInput" onchange="previewImage(event)">
+      <div id="preview"></div>
+    </div>
+    <button class="submit-btn" onclick="updateProfile()">Save Changes</button>
+    <a class="back-link" href="dashboard.html">← Back to Dashboard</a>
+  </div>
+
+  <script>
+    const email = localStorage.getItem("userEmail");
+    const role = localStorage.getItem("userRole");
+
+    if (!email || role !== "user") {
+      window.location.href = "index.html";
+    }
+
+    let imageBase64 = "";
+
+    fetch("YOUR_GOOGLE_SCRIPT_WEBAPP_URL", {
+      method: "POST",
+      body: JSON.stringify({ action: "getUser", email: email })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "success") {
+        document.getElementById("nameInput").value = data.name;
+        document.getElementById("phoneInput").value = data.phone;
+        document.getElementById("addressInput").value = data.address;
+        document.getElementById("divisionInput").value = data.division;
+        if (data.image) {
+          imageBase64 = data.image;
+          document.getElementById("preview").innerHTML = `<img src="${data.image}" alt="Profile Image">`;
+        }
+      } else {
+        alert("Failed to load profile.");
+      }
+    });
+
+    function previewImage(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        imageBase64 = reader.result;
+        document.getElementById("preview").innerHTML = `<img src="${reader.result}" />`;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function updateProfile() {
+      const name = document.getElementById("nameInput").value;
+      const phone = document.getElementById("phoneInput").value;
+      const address = document.getElementById("addressInput").value;
+      const division = document.getElementById("divisionInput").value;
+
+      fetch("https://script.google.com/macros/s/AKfycbwCUC5TBSRqGBuF6YhIEs6w8mFlc8EKPEyTusNlGHyxMdbQJ4j_ssQzU2eshgHnpw5KOA/exec", {
+        method: "POST",
+        body: JSON.stringify({
+          action: "updateUser",
+          email,
+          name,
+          phone,
+          address,
+          division,
+          image: imageBase64
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success") {
+          alert("Profile updated!");
+          window.location.href = "dashboard.html";
+        } else {
+          alert("Update failed.");
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

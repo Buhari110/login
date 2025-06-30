@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FAG HQ Portal – Login & Signup</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #1d3557, #457b9d);
+      color: #fff;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .wrapper {
+      display: flex;
+      flex-direction: row;
+      background: #fff;
+      width: 90%;
+      max-width: 1000px;
+      height: 600px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .left-panel {
+      background: #1d3557;
+      flex: 1;
+      padding: 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      color: #fff;
+    }
+
+    .left-panel h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .left-panel p {
+      font-size: 1rem;
+      opacity: 0.8;
+    }
+
+    .right-panel {
+      flex: 2;
+      padding: 2rem;
+      color: #333;
+      overflow-y: auto;
+    }
+
+    .tab-buttons {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 2rem;
+    }
+
+    .tab-buttons button {
+      flex: 1;
+      padding: 1rem;
+      border: none;
+      background: #eee;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .tab-buttons button.active {
+      background: #1d3557;
+      color: #fff;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.7rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
+
+    button.submit-btn {
+      width: 100%;
+      background: #1d3557;
+      color: #fff;
+      border: none;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    #preview img {
+      margin-top: 10px;
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 10px;
+      color: red;
+    }
+
+    @media screen and (max-width: 768px) {
+      .wrapper {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .left-panel {
+        display: none;
+      }
+
+      .right-panel {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrapper">
+    <div class="left-panel">
+      <h1>Welcome to FAG HQ Portal</h1>
+      <p>Login or create your account to access your dashboard.</p>
+    </div>
+
+    <div class="right-panel">
+      <div class="tab-buttons">
+        <button id="loginTab" class="active" onclick="switchForm('login')">Login</button>
+        <button id="signupTab" onclick="switchForm('signup')">Signup</button>
+      </div>
+
+      <div id="loginForm">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="loginEmail" placeholder="Enter email">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter password">
+        </div>
+        <button class="submit-btn" onclick="login()">Login</button>
+      </div>
+
+      <div id="signupForm" style="display: none;">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="signupName">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="signupEmail">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="signupPassword">
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="text" id="signupPhone">
+        </div>
+        <div class="form-group">
+          <label>Address</label>
+          <input type="text" id="signupAddress">
+        </div>
+        <div class="form-group">
+          <label>Division</label>
+          <select id="signupDivision">
+            <option value="">-- Select Division --</option>
+            <option value="ILRDIV">Ilorin Division</option>
+            <option value="KAIDIV">Kaiama Division</option>
+            <option value="AJSDIV">Ajase Division</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Upload Image</label>
+          <input type="file" id="signupImage" accept="image/*" onchange="previewImage(event)">
+          <div id="preview"></div>
+        </div>
+        <button class="submit-btn" onclick="signup()">Signup</button>
+      </div>
+
+      <div id="message"></div>
+    </div>
+  </div>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwCUC5TBSRqGBuF6YhIEs6w8mFlc8EKPEyTusNlGHyxMdbQJ4j_ssQzU2eshgHnpw5KOA/exec";
+
+    function switchForm(form) {
+      const login = document.getElementById("loginForm");
+      const signup = document.getElementById("signupForm");
+      const loginTab = document.getElementById("loginTab");
+      const signupTab = document.getElementById("signupTab");
+
+      if (form === 'login') {
+        login.style.display = 'block';
+        signup.style.display = 'none';
+        loginTab.classList.add('active');
+        signupTab.classList.remove('active');
+      } else {
+        login.style.display = 'none';
+        signup.style.display = 'block';
+        loginTab.classList.remove('active');
+        signupTab.classList.add('active');
+      }
+
+      document.getElementById("message").innerText = "";
+    }
+
+    function previewImage(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById("preview").innerHTML = `<img src="${reader.result}" />`;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function toBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = err => reject(err);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function signup() {
+      const name = document.getElementById("signupName").value;
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+      const phone = document.getElementById("signupPhone").value;
+      const address = document.getElementById("signupAddress").value;
+      const division = document.getElementById("signupDivision").value;
+      const imageFile = document.getElementById("signupImage").files[0];
+      const image = imageFile ? await toBase64(imageFile) : "";
+
+      fetch(scriptURL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "signup", name, email, password, phone, address, division, image })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("message").innerText = data.message;
+        if (data.status === "success") switchForm("login");
+      });
+    }
+
+    function login() {
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+
+      fetch(scriptURL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "login", email, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success") {
+          localStorage.setItem("userEmail", data.email);
+          localStorage.setItem("userRole", data.role);
+          if (data.role === "admin") {
+            window.location.href = "admin-dashboard.html";
+          } else {
+            window.location.href = "dashboard.html";
+          }
+        } else {
+          document.getElementById("message").innerText = data.message;
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

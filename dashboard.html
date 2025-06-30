@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Dashboard – FAG HQ</title>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f9fd;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .card {
+      background: white;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .card img {
+      width: 130px;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 1rem;
+      border: 4px solid #1d3557;
+    }
+
+    .card h2 {
+      margin: 0.5rem 0 0.2rem;
+      font-size: 1.8rem;
+    }
+
+    .card p {
+      margin: 0.3rem 0;
+      font-size: 1rem;
+      color: #555;
+    }
+
+    .label {
+      font-weight: bold;
+      color: #1d3557;
+    }
+
+    .logout-btn {
+      margin-top: 2rem;
+      padding: 0.7rem 1.5rem;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .logout-btn:hover {
+      background: #c0392b;
+    }
+
+    @media screen and (max-width: 500px) {
+      .card {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <img id="userImage" src="https://via.placeholder.com/130" alt="User Image">
+    <h2 id="userName">Loading...</h2>
+    <p><span class="label">User ID:</span> <span id="userId">...</span></p>
+    <p><span class="label">Phone:</span> <span id="userPhone">...</span></p>
+    <p><span class="label">Division:</span> <span id="userDivision">...</span></p>
+    <p><span class="label">Role:</span> <span id="userRole">...</span></p>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    const email = localStorage.getItem("userEmail");
+    const role = localStorage.getItem("userRole");
+
+    if (!email || role !== "user") {
+      window.location.href = "index.html";
+    }
+
+    fetch("https://script.google.com/macros/s/AKfycbwCUC5TBSRqGBuF6YhIEs6w8mFlc8EKPEyTusNlGHyxMdbQJ4j_ssQzU2eshgHnpw5KOA/exec", {
+      method: "POST",
+      body: JSON.stringify({ action: "getUser", email: email })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "success") {
+        document.getElementById("userName").innerText = data.name;
+        document.getElementById("userId").innerText = data.id;
+        document.getElementById("userPhone").innerText = data.phone;
+        document.getElementById("userDivision").innerText = data.division;
+        document.getElementById("userRole").innerText = data.role;
+        document.getElementById("userImage").src = data.image || "https://via.placeholder.com/130";
+      } else {
+        alert("User not found.");
+        localStorage.clear();
+        window.location.href = "index.html";
+      }
+    });
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+  </script>
+
+</body>
+</html>
