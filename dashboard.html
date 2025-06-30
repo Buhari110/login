@@ -1,11 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>User Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f2f9ff;
+      margin: 0;
+      padding: 2rem;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -13,48 +17,55 @@
     }
     .card {
       background: white;
-      border-radius: 10px;
-      padding: 30px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      width: 350px;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+      max-width: 400px;
       text-align: center;
+      width: 100%;
     }
     .card img {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
-      margin-bottom: 15px;
+      object-fit: cover;
+      margin-bottom: 1rem;
+      border: 4px solid #1c92d2;
     }
     .card h2 {
-      margin: 0 0 10px;
-    }
-    .card p {
-      margin: 5px 0;
+      margin: 0.5rem 0;
       color: #333;
     }
+    .card p {
+      margin: 0.3rem 0;
+      color: #555;
+    }
     .logout {
-      margin-top: 15px;
-      background: #c0392b;
+      margin-top: 1.5rem;
+      background: #e74c3c;
       color: white;
       border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
+      padding: 0.6rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 8px;
       cursor: pointer;
+    }
+    .logout:hover {
+      background: #c0392b;
     }
   </style>
 </head>
 <body>
+
   <div class="card">
-    <img id="userImage" src="" alt="Profile Picture" />
-    <h2 id="userName"></h2>
+    <img id="userImage" src="" alt="User Image">
+    <h2 id="userName">Loading...</h2>
     <p><strong>ID:</strong> <span id="userId"></span></p>
     <p><strong>Phone:</strong> <span id="userPhone"></span></p>
     <button class="logout" onclick="logout()">Logout</button>
   </div>
 
   <script>
-    // Simulate local storage or fetch from server if needed
     const email = localStorage.getItem("userEmail");
 
     if (!email) {
@@ -65,11 +76,16 @@
         body: JSON.stringify({ action: "getUser", email: email })
       })
       .then(res => res.json())
-      .then(user => {
-        document.getElementById("userName").innerText = user.name;
-        document.getElementById("userId").innerText = user.id;
-        document.getElementById("userPhone").innerText = user.phone;
-        document.getElementById("userImage").src = user.image;
+      .then(data => {
+        if (data.status === "success") {
+          document.getElementById("userName").innerText = data.name;
+          document.getElementById("userId").innerText = data.id;
+          document.getElementById("userPhone").innerText = data.phone;
+          document.getElementById("userImage").src = data.image || 'https://via.placeholder.com/120';
+        } else {
+          alert("User not found.");
+          window.location.href = "index.html";
+        }
       });
     }
 
@@ -78,5 +94,6 @@
       window.location.href = "index.html";
     }
   </script>
+
 </body>
 </html>
