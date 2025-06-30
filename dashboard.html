@@ -1,22 +1,80 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Dashboard</title>
+  <title>User Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      width: 350px;
+      text-align: center;
+    }
+    .card img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 15px;
+    }
+    .card h2 {
+      margin: 0 0 10px;
+    }
+    .card p {
+      margin: 5px 0;
+      color: #333;
+    }
+    .logout {
+      margin-top: 15px;
+      background: #c0392b;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <h2>Welcome, <span id="userName"></span>!</h2>
-  <button onclick="logout()">Logout</button>
+  <div class="card">
+    <img id="userImage" src="" alt="Profile Picture" />
+    <h2 id="userName"></h2>
+    <p><strong>ID:</strong> <span id="userId"></span></p>
+    <p><strong>Phone:</strong> <span id="userPhone"></span></p>
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
 
   <script>
-    const user = localStorage.getItem("username");
-    if (!user) {
+    // Simulate local storage or fetch from server if needed
+    const email = localStorage.getItem("userEmail");
+
+    if (!email) {
       window.location.href = "index.html";
     } else {
-      document.getElementById("userName").innerText = user;
+      fetch("https://script.google.com/macros/library/d/13sUPU3im9jOmVRdrYkHceAOFEj7dy1CWlif2T6ZfhkSmcHJ-hMU831_2/1", {
+        method: 'POST',
+        body: JSON.stringify({ action: "getUser", email: email })
+      })
+      .then(res => res.json())
+      .then(user => {
+        document.getElementById("userName").innerText = user.name;
+        document.getElementById("userId").innerText = user.id;
+        document.getElementById("userPhone").innerText = user.phone;
+        document.getElementById("userImage").src = user.image;
+      });
     }
 
     function logout() {
-      localStorage.removeItem("username");
+      localStorage.clear();
       window.location.href = "index.html";
     }
   </script>
