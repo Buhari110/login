@@ -96,22 +96,28 @@
 
     fetch("https://script.google.com/macros/s/AKfycbwCUC5TBSRqGBuF6YhIEs6w8mFlc8EKPEyTusNlGHyxMdbQJ4j_ssQzU2eshgHnpw5KOA/exec", {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "getUser", email: email })
     })
     .then(res => res.json())
     .then(data => {
       if (data.status === "success") {
-        document.getElementById("userName").innerText = data.name;
-        document.getElementById("userId").innerText = data.id;
-        document.getElementById("userPhone").innerText = data.phone;
-        document.getElementById("userDivision").innerText = data.division;
-        document.getElementById("userRole").innerText = data.role;
+        document.getElementById("userName").innerText = data.name || "Unknown";
+        document.getElementById("userId").innerText = data.userId || "-";
+        document.getElementById("userPhone").innerText = data.phone || "-";
+        document.getElementById("userDivision").innerText = data.division || "-";
+        document.getElementById("userRole").innerText = data.role || "user";
         document.getElementById("userImage").src = data.image || "https://via.placeholder.com/130";
       } else {
         alert("User not found.");
         localStorage.clear();
         window.location.href = "index.html";
       }
+    })
+    .catch(() => {
+      alert("Network error. Try again.");
+      localStorage.clear();
+      window.location.href = "index.html";
     });
 
     function logout() {
