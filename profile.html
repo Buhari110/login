@@ -126,7 +126,7 @@
 
     let imageBase64 = "";
 
-    fetch("YOUR_GOOGLE_SCRIPT_WEBAPP_URL", {
+    fetch("https://script.google.com/macros/s/AKfycbwCUC5TBSRqGBuF6YhIEs6w8mFlc8EKPEyTusNlGHyxMdbQJ4j_ssQzU2eshgHnpw5KOA/exec", {
       method: "POST",
       body: JSON.stringify({ action: "getUser", email: email })
     })
