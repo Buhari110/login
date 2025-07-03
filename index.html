@@ -205,91 +205,91 @@
   </div>
 
   <script>
-    const apiURL = "https://script.google.com/macros/s/AKfycbwCUC5TBSRqGBuF6YhIEs6w8mFlc8EKPEyTusNlGHyxMdbQJ4j_ssQzU2eshgHnpw5KOA/exec"; // <- Replace with your backend URL
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwCUC5TBSRqGBuF6YhIEs6w8mFlc8EKPEyTusNlGHyxMdbQJ4j_ssQzU2eshgHnpw5KOA/exec";
 
-function switchForm(type) {
-  document.getElementById("loginForm").style.display = type === "login" ? "block" : "none";
-  document.getElementById("signupForm").style.display = type === "signup" ? "block" : "none";
-  document.getElementById("loginTab").classList.toggle("active", type === "login");
-  document.getElementById("signupTab").classList.toggle("active", type === "signup");
-  document.getElementById("message").innerText = "";
-  document.getElementById("message").className = "alert mt-1";
-}
+    function switchForm(form) {
+      const login = document.getElementById("loginForm");
+      const signup = document.getElementById("signupForm");
+      const loginTab = document.getElementById("loginTab");
+      const signupTab = document.getElementById("signupTab");
 
-function loginUser(event) {
-  event.preventDefault();
-  const email = document.getElementById("loginEmail").value.trim();
-  const password = document.getElementById("loginPassword").value.trim();
-
-  if (!email || !password) return showMessage("Please fill all fields", "error");
-
-  fetch(apiURL, {
-    method: "POST",
-    body: JSON.stringify({ action: "login", email, password }),
-    headers: { "Content-Type": "application/json" }
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (data.status === "success") {
-        localStorage.setItem("userEmail", data.email);
-        localStorage.setItem("userRole", data.role);
-        localStorage.setItem("userId", data.userId);
-        window.location.href = data.role === "admin" ? "admin-dashboard.html" : "dashboard.html";
+      if (form === 'login') {
+        login.style.display = 'block';
+        signup.style.display = 'none';
+        loginTab.classList.add('active');
+        signupTab.classList.remove('active');
       } else {
-        showMessage(data.message || "Login failed", "error");
+        login.style.display = 'none';
+        signup.style.display = 'block';
+        loginTab.classList.remove('active');
+        signupTab.classList.add('active');
       }
-    })
-    .catch(() => showMessage("Network error", "error"));
-}
 
-function registerUser(event) {
-  event.preventDefault();
-  const email = document.getElementById("signupEmail").value.trim();
-  const password = document.getElementById("signupPassword").value.trim();
-  const name = document.getElementById("signupName").value.trim();
-  const phone = document.getElementById("signupPhone").value.trim();
-  const address = document.getElementById("signupAddress").value.trim();
-  const division = document.getElementById("signupDivision").value;
-  const image = document.getElementById("signupImage").files[0];
+      document.getElementById("message").innerText = "";
+    }
 
-  if (!email || !password || !name || !phone || !division)
-    return showMessage("Please fill all required fields", "error");
+    function previewImage(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById("preview").innerHTML = `<img src="${reader.result}" />`;
+      };
+      reader.readAsDataURL(file);
+    }
 
-  const reader = new FileReader();
-  reader.onload = function () {
-    const base64Image = reader.result;
+    async function toBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = err => reject(err);
+        reader.readAsDataURL(file);
+      });
+    }
 
-    fetch(apiURL, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "register",
-        email, password, name, phone, address, division,
-        image: base64Image
-      }),
-      headers: { "Content-Type": "application/json" }
-    })
+    async function signup() {
+      const name = document.getElementById("signupName").value;
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+      const phone = document.getElementById("signupPhone").value;
+      const address = document.getElementById("signupAddress").value;
+      const division = document.getElementById("signupDivision").value;
+      const imageFile = document.getElementById("signupImage").files[0];
+      const image = imageFile ? await toBase64(imageFile) : "";
+
+      fetch(scriptURL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "signup", name, email, password, phone, address, division, image })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("message").innerText = data.message;
+        if (data.status === "success") switchForm("login");
+      });
+    }
+
+    function login() {
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+
+      fetch(scriptURL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "login", email, password })
+      })
       .then(res => res.json())
       .then(data => {
         if (data.status === "success") {
-          showMessage("Registration successful. Please login.", "success");
-          switchForm("login");
+          localStorage.setItem("userEmail", data.email);
+          localStorage.setItem("userRole", data.role);
+          if (data.role === "admin") {
+            window.location.href = "admin-dashboard.html";
+          } else {
+            window.location.href = "dashboard.html";
+          }
         } else {
-          showMessage(data.message || "Registration failed", "error");
+          document.getElementById("message").innerText = data.message;
         }
-      })
-      .catch(() => showMessage("Network error", "error"));
-  };
-
-  if (image) reader.readAsDataURL(image);
-  else reader.onload();
-}
-
-function showMessage(msg, type = "success") {
-  const box = document.getElementById("message");
-  box.innerText = msg;
-  box.className = `alert mt-1 alert-${type}`;
-}
-
+      });
+    }
   </script>
 
 </body>
